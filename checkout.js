@@ -360,7 +360,7 @@ const {createStore} = Redux;
 
 const reducer = (state, {type,payload}) => { 
   if (type === "ChangeBillingCheckbox") {
-    return payload ? {...state, "billingAddress": {...state.billingAddress, "selected": state.billingAddress.default}} : {...state, "billingAddress": {...state.billingAddress, "selected": null}, billingIsShipping: payload}
+    return payload ? {...state, "billingAddress": {...state.billingAddress, "selected": state.billingAddress.default}, billingIsShipping: payload} : {...state, "billingAddress": {...state.billingAddress, "selected": null}, billingIsShipping: payload}
   } 
   if (type === "ChangeDeliveryEditCheckbox") {    
     return payload ? {...state, "shippingAddress": {...state.shippingAddress, "selected": null}} : {...state, "shippingAddress": {...state.shippingAddress, "selected": state.shippingAddress.default}}
