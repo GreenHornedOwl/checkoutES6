@@ -499,7 +499,10 @@ const renderDeliveryAddressReadonly = (id) => {
     document.getElementById("summary-billing").innerHTML = `<p>${address.EcomOrderCustomerAddress}<br>${address.EcomOrderCustomerCity}, ${address.EcomOrderCustomerRegion} ${address.EcomOrderCustomerZip}<br>${getCountryText(address.EcomOrderCustomerCountry)}<br>${address.EcomOrderCustomerEmail}<br>${address.EcomOrderCustomerPhone}</p>`;
   }
 }
-
+const renderBillingAddressReadonly = (id) => { 
+  let address = store.getState().addresses.filter(o=>o.id === id)[0];  
+  document.getElementById("summary-billing").innerHTML = `<p>${address.EcomOrderCustomerAddress}<br>${address.EcomOrderCustomerCity}, ${address.EcomOrderCustomerRegion} ${address.EcomOrderCustomerZip}<br>${getCountryText(address.EcomOrderCustomerCountry)}<br>${address.EcomOrderCustomerEmail}<br>${address.EcomOrderCustomerPhone}</p>`; 
+}
 //Events
 document.getElementById("editShippingAddress").querySelector("input").addEventListener('change',(e) => {  
   store.dispatch({type: "ChangeDeliveryEditCheckbox", payload: e.currentTarget.checked});  
@@ -507,8 +510,7 @@ document.getElementById("editShippingAddress").querySelector("input").addEventLi
     fillAddress("Delivery");
     document.getElementById("shipping-address").classList.remove("d-none");
     document.getElementById("shipping-address-readonly").classList.add("d-none");
-    document.getElementById("AddressPicker").classList.add("d-none");
-    
+    document.getElementById("AddressPicker").classList.add("d-none");    
   } else {
     document.getElementById("shipping-address").classList.add("d-none");
     document.getElementById("shipping-address-readonly").classList.remove("d-none");
@@ -519,6 +521,7 @@ document.getElementById("billingIsSameAsShipping").querySelector("input").addEve
   store.dispatch({type: "ChangeBillingCheckbox", payload: e.currentTarget.checked});
   if (e.currentTarget.checked) {
     document.getElementById("billing-address").classList.add("d-none"); 
+    renderBillingAddressReadonly(store.getState().billingAddress.default);
   } else {
     fillAddress();
     document.getElementById("billing-address").classList.remove("d-none");
