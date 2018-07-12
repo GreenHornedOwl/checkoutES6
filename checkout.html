@@ -33,17 +33,20 @@
                   <input type="text" name="EcomOrderDeliveryAddress" id="EcomOrderDeliveryAddress">
                   <input type="text" name="EcomOrderDeliveryAddress2" id="EcomOrderDeliveryAddress2">
                   <input type="text" name="EcomOrderDeliveryCity" id="EcomOrderDeliveryCity">
-                  <select name="EcomOrderDeliveryCountry" id="EcomOrderDeliveryRegion" class="region">        
+                  <select name="EcomOrderDeliveryRegion" id="EcomOrderDeliveryRegion" class="region">        
                   </select>
                   <input type="text" name="EcomOrderDeliveryZip" id="EcomOrderDeliveryZip">
                   <select name="EcomOrderDeliveryCountry" id="EcomOrderDeliveryCountry" class="country">        
                   </select>
+                  <div id="saveAddress">
+                    <label><input type="checkbox" /> Save address</label>
+                  </div>
                   <div><p><strong>Work in Progress:</strong> Changing inputs when addresses are editable to change the order summary</p></div>
                   <div><p><strong>Work in Progress:</strong> Countries without regions to change region select to input (Australia)</p></div>
                 </div>
                 <div id="editShippingAddress">
                   <label><input type="checkbox" /> Edit shipping address</label>
-                </div>
+                </div>                
                 <h2>Billing Address</h2>
                 <div id="billingIsSameAsShipping">
                   <label><input type="checkbox" checked /> Billing address is same as delivery address</label>
@@ -56,7 +59,7 @@
                   <input type="text" name="EcomOrderCustomerAddress" id="EcomOrderCustomerAddress">
                   <input type="text" name="EcomOrderCustomerAddress2" id="EcomOrderCustomerAddress2">
                   <input type="text" name="EcomOrderCustomerCity" id="EcomOrderCustomerCity">
-                  <select name="EcomOrderCustomerCountry" id="EcomOrderCustomerRegion" class="region">        
+                  <select name="EcomOrderCustomerRegion" id="EcomOrderCustomerRegion" class="region">        
                   </select>
                   <input type="text" name="EcomOrderCustomerZip" id="EcomOrderCustomerZip">
                   <select name="EcomOrderCustomerCountry" id="EcomOrderCustomerCountry" class="country">        

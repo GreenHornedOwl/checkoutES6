@@ -455,6 +455,25 @@ const copyDeliveryStateAndRegion = () => {
 const fillAddress = (area = "Customer") => {
   let id = area === "Customer" ? store.getState().billingAddress.default : store.getState().shippingAddress.default;
   let address = store.getState().addresses.filter(o=>o.id === id)[0];  
+  if(document.getElementById("editShippingAddress").querySelector("input").checked && !document.getElementById("billingIsSameAsShipping").querySelector("input").checked) {
+    address = {};
+    document.getElementById("shipping-address").querySelectorAll('input[type="text"]').forEach((el) => {    
+      let name = el.attributes.name.value.replace("Delivery","Customer");
+      let value = el.value;
+      address[name] = value;
+    });
+    document.getElementById("shipping-address").querySelectorAll('input[type="email"]').forEach((el) => {    
+      let name = el.attributes.name.value.replace("Delivery","Customer");
+      let value = el.value;
+      address[name] = value;
+    });
+    document.getElementById("shipping-address").querySelectorAll('select').forEach((el) => {    
+      let name = el.attributes.name.value.replace("Delivery","Customer");
+      let value = el.value;
+      address[name] = value;    
+    });   
+    console.log(address);
+  }
     for (let key in address) {
       if (address.hasOwnProperty(key)) {        
         if (key.includes("Customer")) {                 
@@ -488,21 +507,58 @@ const fillAddress = (area = "Customer") => {
     }
 }
 
-const getCountryText = (code) => {
+const getCountryText = (code) => {  
   return store.getState().countries.filter(o => o.countryCode === code)[0].country;
 }
-const renderDeliveryAddressReadonly = (id) => { 
-  let address = store.getState().addresses.filter(o=>o.id === id)[0];  
+const renderDeliveryAddressReadonly = (address) => {    
   document.getElementById("shipping-address-readonly").innerHTML = `<p>${address.EcomOrderCustomerAddress}<br>${address.EcomOrderCustomerCity}, ${address.EcomOrderCustomerRegion} ${address.EcomOrderCustomerZip}<br>${getCountryText(address.EcomOrderCustomerCountry)}<br>${address.EcomOrderCustomerEmail}<br>${address.EcomOrderCustomerPhone}</p>`;
   document.getElementById("summary-shipping").innerHTML = `<p>${address.EcomOrderCustomerAddress}<br>${address.EcomOrderCustomerCity}, ${address.EcomOrderCustomerRegion} ${address.EcomOrderCustomerZip}<br>${getCountryText(address.EcomOrderCustomerCountry)}<br>${address.EcomOrderCustomerEmail}<br>${address.EcomOrderCustomerPhone}</p>`;
   if (store.getState().billingIsShipping) {
     document.getElementById("summary-billing").innerHTML = `<p>${address.EcomOrderCustomerAddress}<br>${address.EcomOrderCustomerCity}, ${address.EcomOrderCustomerRegion} ${address.EcomOrderCustomerZip}<br>${getCountryText(address.EcomOrderCustomerCountry)}<br>${address.EcomOrderCustomerEmail}<br>${address.EcomOrderCustomerPhone}</p>`;
   }
 }
-const renderBillingAddressReadonly = (id) => { 
-  let address = store.getState().addresses.filter(o=>o.id === id)[0];  
+const renderBillingAddressReadonly = (address) => {   
   document.getElementById("summary-billing").innerHTML = `<p>${address.EcomOrderCustomerAddress}<br>${address.EcomOrderCustomerCity}, ${address.EcomOrderCustomerRegion} ${address.EcomOrderCustomerZip}<br>${getCountryText(address.EcomOrderCustomerCountry)}<br>${address.EcomOrderCustomerEmail}<br>${address.EcomOrderCustomerPhone}</p>`; 
 }
+const renderShippingAddressReadonlyEdit = () => {
+  let address = {};
+  document.getElementById("shipping-address").querySelectorAll('input[type="text"]').forEach((el) => {    
+    let name = el.attributes.name.value.replace("Delivery","Customer");
+    let value = el.value;
+    address[name] = value;
+  });
+  document.getElementById("shipping-address").querySelectorAll('input[type="email"]').forEach((el) => {    
+    let name = el.attributes.name.value.replace("Delivery","Customer");
+    let value = el.value;
+    address[name] = value;
+  });
+  document.getElementById("shipping-address").querySelectorAll('select').forEach((el) => {    
+    let name = el.attributes.name.value.replace("Delivery","Customer");
+    let value = el.value;
+    address[name] = value;    
+  });  
+  renderDeliveryAddressReadonly(address);
+}
+const renderBillingAddressReadonlyEdit = () => {
+  let address = {};
+  document.getElementById("billing-address").querySelectorAll('input[type="text"]').forEach((el) => {    
+    let name = el.attributes.name.value;
+    let value = el.value;
+    address[name] = value;
+  });
+  document.getElementById("billing-address").querySelectorAll('input[type="email"]').forEach((el) => {    
+    let name = el.attributes.name.value;
+    let value = el.value;
+    address[name] = value;
+  });
+  document.getElementById("billing-address").querySelectorAll('select').forEach((el) => {    
+    let name = el.attributes.name.value;
+    let value = el.value;
+    address[name] = value;    
+  });  
+  renderBillingAddressReadonly(address);
+}
+
 //Events
 document.getElementById("editShippingAddress").querySelector("input").addEventListener('change',(e) => {  
   store.dispatch({type: "ChangeDeliveryEditCheckbox", payload: e.currentTarget.checked});  
@@ -515,13 +571,16 @@ document.getElementById("editShippingAddress").querySelector("input").addEventLi
     document.getElementById("shipping-address").classList.add("d-none");
     document.getElementById("shipping-address-readonly").classList.remove("d-none");
     document.getElementById("AddressPicker").classList.remove("d-none");
+    let address = store.getState().addresses.filter(o=>o.id === store.getState().shippingAddress.default)[0];  
+    renderDeliveryAddressReadonly(address);
   }
 });
 document.getElementById("billingIsSameAsShipping").querySelector("input").addEventListener('change',(e) => { 
   store.dispatch({type: "ChangeBillingCheckbox", payload: e.currentTarget.checked});
   if (e.currentTarget.checked) {
     document.getElementById("billing-address").classList.add("d-none"); 
-    renderBillingAddressReadonly(store.getState().billingAddress.default);
+    let address = store.getState().addresses.filter(o=>o.id === store.getState().billingAddress.default)[0]
+    renderBillingAddressReadonly(address);
   } else {
     fillAddress();
     document.getElementById("billing-address").classList.remove("d-none");
@@ -529,7 +588,8 @@ document.getElementById("billingIsSameAsShipping").querySelector("input").addEve
 });
 document.getElementById("AddressPicker").addEventListener('change',(e) => {  
   store.dispatch({type: "UpdateDeliveryAddress", payload: parseFloat(e.currentTarget.value)}); 
-  renderDeliveryAddressReadonly(parseFloat(e.currentTarget.value));
+  let address = store.getState().addresses.filter(o=>o.id === parseFloat(e.currentTarget.value))[0];
+  renderDeliveryAddressReadonly(address);
 });
 document.getElementById("EcomOrderDeliveryCountry").addEventListener('change', (e) => {
   getDataJSON(e.currentTarget.value)
@@ -539,7 +599,26 @@ document.getElementById("EcomOrderCustomerCountry").addEventListener('change', (
   getDataJSON(e.currentTarget.value)
     .then((data)=>{return outputRegions(data, document.getElementById("EcomOrderCustomerRegion"))})   
 });
-
+document.getElementById("shipping-address").querySelectorAll("input").forEach((el) => {
+  el.addEventListener("change", (e) => {
+    renderShippingAddressReadonlyEdit();
+  });
+});
+document.getElementById("shipping-address").querySelectorAll("select").forEach((el) => {
+  el.addEventListener("change", (e) => {
+    renderShippingAddressReadonlyEdit();
+  });
+})
+document.getElementById("billing-address").querySelectorAll("input").forEach((el) => {
+  el.addEventListener("change", (e) => {
+    renderBillingAddressReadonlyEdit();
+  });
+});
+document.getElementById("billing-address").querySelectorAll("select").forEach((el) => {
+  el.addEventListener("change", (e) => {
+    renderBillingAddressReadonlyEdit();
+  });
+})
 
 
 
@@ -549,4 +628,5 @@ getDataJSON()
   .then((data) => {return featureCountry(data,"US")})
   .then((data) => {return outputCountries(data)}) 
   .then((data) => {return outputRegions(data)})
-renderDeliveryAddressReadonly(parseFloat(document.getElementById("AddressPicker").value));  
+let defaultAddress = store.getState().addresses.filter(o=>o.id === parseFloat(document.getElementById("AddressPicker").value))[0];  
+renderDeliveryAddressReadonly(defaultAddress);  
