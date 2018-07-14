@@ -23,7 +23,7 @@
                   </select>
                 </div>
                 <div id="shipping-address-readonly">
-                  <p>St. Monica<br>Los Angeles, CA 90201<br>United States of America<br>user@test.com<br>555-555-5555</p>
+                  <!-- <p>St. Monica<br>Los Angeles, CA 90201<br>United States of America<br>user@test.com<br>555-555-5555</p> -->
                 </div>
                 <div id="shipping-address" class="d-none">
                   <input type="text" name="EcomOrderDeliveryName" id="EcomOrderDeliveryName">
@@ -41,8 +41,8 @@
                   <div id="saveAddress">
                     <label><input type="checkbox" /> Save address</label>
                   </div>
-                  <div><p><strong>Work in Progress:</strong> Changing inputs when addresses are editable to change the order summary</p></div>
-                  <div><p><strong>Work in Progress:</strong> Countries without regions to change region select to input (Australia)</p></div>
+                  <!-- <div><p><strong>Work in Progress:</strong> Changing inputs when addresses are editable to change the order summary</p></div>
+                  <div><p><strong>Work in Progress:</strong> Countries without regions to change region select to input (Australia)</p></div> -->
                 </div>
                 <div id="editShippingAddress">
                   <label><input type="checkbox" /> Edit shipping address</label>
@@ -64,8 +64,11 @@
                   <input type="text" name="EcomOrderCustomerZip" id="EcomOrderCustomerZip">
                   <select name="EcomOrderCustomerCountry" id="EcomOrderCustomerCountry" class="country">        
                   </select>
-                  <div><p><strong>Work in Progress:</strong> Changing inputs when addresses are editable to change the order summary</p></div>
-                  <div><p><strong>Work in Progress:</strong> Countries without regions to change region select to input (Australia)</p></div>
+                  <!-- <div><p><strong>Work in Progress:</strong> Changing inputs when addresses are editable to change the order summary</p></div>
+                  <div><p><strong>Work in Progress:</strong> Countries without regions to change region select to input (Australia)</p></div> -->
+                </div>
+                <div class="action">
+                  <button type="submit">Submit</button>
                 </div>
               </form>
 
@@ -75,11 +78,11 @@
           <div id="summary">
             <h4>Shipping address</h4>
             <div id="summary-shipping">
-              <p>St. Monica<br>Los Angeles, CA 90201<br>United States of America<br>user@test.com<br>555-555-5555</p>
+              <!-- <p>St. Monica<br>Los Angeles, CA 90201<br>United States of America<br>user@test.com<br>555-555-5555</p> -->
             </div>            
             <h4>Billing address</h4>
             <div id="summary-billing">
-              <p>St. Monica<br>Los Angeles, CA 90201<br>United States of America<br>user@test.com<br>555-555-5555</p>
+              <!-- <p>St. Monica<br>Los Angeles, CA 90201<br>United States of America<br>user@test.com<br>555-555-5555</p> -->
             </div>
             
           </div>
@@ -88,7 +91,7 @@
     </div>
     
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.0/redux.min.js"></script>
   <script src="checkout.js"></script>
 </body>
