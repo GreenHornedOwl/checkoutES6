@@ -363,7 +363,7 @@ const reducer = (state, {type,payload}) => {
     return payload ? {...state, "billingAddress": {...state.billingAddress, "selected": state.billingAddress.default}, billingIsShipping: payload} : {...state, "billingAddress": {...state.billingAddress, "selected": null}, billingIsShipping: payload}
   } 
   if (type === "ChangeDeliveryEditCheckbox") {    
-    return payload ? {...state, "shippingAddress": {...state.shippingAddress, "selected": null}} : {...state, "shippingAddress": {...state.shippingAddress, "selected": state.shippingAddress.default}}
+    return payload ? {...state, "shippingAddress": {...state.shippingAddress, "selected": null, "editable": payload}} : {...state, "shippingAddress": {...state.shippingAddress, "selected": state.shippingAddress.default, "editable": payload}}
   } 
   if (type === "UpdateDeliveryAddress") {    
     return {...state, "shippingAddress": {"default": payload, "selected": payload}, "billingAddress": {"default": payload, "selected": state.billingAddress.selected !== null ? payload : null}}
@@ -380,11 +380,15 @@ const reducer = (state, {type,payload}) => {
 const state = {
   "shippingAddress": {
     "default": 1,
-    "selected": 1
+    "selected": 1,
+    "readonly": false,
+    "editable": false
   },
   "billingAddress": {
     "default": 1,
-    "selected": 1
+    "selected": 1,
+    "readonly": false,
+    "editable": false
   },
   "addresses": addresses,
   "billingIsShipping": true,
@@ -397,11 +401,13 @@ const state = {
   }
 }
 
-const store = createStore(reducer, state);
+const store = createStore(reducer, state, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 store.subscribe(() => {
   console.log("store changed to:  ", store.getState());
   renderAddressReadonly("Customer", store.getState().order.billingAddress);
   renderAddressReadonly("Delivery", store.getState().order.shippingAddress);
+  // toggleEditAddress("Customer", store.getState().billingAddress.editable);
+  toggleEditAddress("Delivery", store.getState().shippingAddress.editable);
   fillAddress("Delivery");
   fillAddress("Customer");
 });
@@ -584,24 +590,29 @@ const registerEventAfterRender = (node) => {
   }
 
 }
-document.getElementById("editShippingAddress").querySelector("input").addEventListener('change',(e) => {  
-  store.dispatch({type: "ChangeDeliveryEditCheckbox", payload: e.currentTarget.checked});  
-  if (e.currentTarget.checked) {    
-    document.getElementById("shipping-address").classList.remove("d-none");
-    document.getElementById("shipping-address-readonly").classList.add("d-none");
-    document.getElementById("AddressPicker").classList.add("d-none");    
-  } else {
-    document.getElementById("shipping-address").classList.add("d-none");
-    document.getElementById("shipping-address-readonly").classList.remove("d-none");
-    document.getElementById("AddressPicker").classList.remove("d-none");
-    let address = store.getState().addresses.filter(o=>o.id === store.getState().shippingAddress.default)[0]; 
-    let {id, ...curatedAddress} = address;     
-    store.dispatch({type: "UpdateOrderShippingAddress", payload: curatedAddress});
-    if (store.getState().billingIsShipping) {
-      store.dispatch({type: "UpdateOrderBillingAddress", payload: curatedAddress});
+const toggleEditAddress = (target = "Delivery", bool) => {
+  if (target === "Delivery") {
+    if (bool) {
+      document.getElementById("shipping-address").classList.remove("d-none");
+      document.getElementById("shipping-address-readonly").classList.add("d-none");     
+      document.getElementById("AddressPicker").value = "custom";
+    } else {
+      document.getElementById("shipping-address").classList.add("d-none");
+      document.getElementById("shipping-address-readonly").classList.remove("d-none");   
+      let address = store.getState().addresses.filter(o=>o.id === store.getState().shippingAddress.default)[0]; 
+      let {id, ...curatedAddress} = address;    
+      document.getElementById("AddressPicker").value = id; 
+      // store.dispatch({type: "UpdateOrderShippingAddress", payload: curatedAddress});
+      // if (store.getState().billingIsShipping) {
+      //   store.dispatch({type: "UpdateOrderBillingAddress", payload: curatedAddress});
+      // }    
     }    
   }
+}
+document.getElementById("editShippingAddress").querySelector("input").addEventListener('change',(e) => {  
+  store.dispatch({type: "ChangeDeliveryEditCheckbox", payload: e.currentTarget.checked});   
 });
+
 document.getElementById("billingIsSameAsShipping").querySelector("input").addEventListener('change',(e) => { 
   store.dispatch({type: "ChangeBillingCheckbox", payload: e.currentTarget.checked});
   if (e.currentTarget.checked) {
@@ -613,13 +624,20 @@ document.getElementById("billingIsSameAsShipping").querySelector("input").addEve
   }
 });
 document.getElementById("AddressPicker").addEventListener('change',(e) => {  
-  store.dispatch({type: "UpdateDeliveryAddress", payload: parseFloat(e.currentTarget.value)}); 
-  let address = store.getState().addresses.filter(o=>o.id === parseFloat(e.currentTarget.value))[0];
-  let {id, ...curatedAddress} = address;
-  store.dispatch({type: "UpdateOrderShippingAddress", payload: curatedAddress});
-  if (store.getState().billingIsShipping) {
-    store.dispatch({type: "UpdateOrderBillingAddress", payload: curatedAddress});
+  if (e.currentTarget.value !== "custom") {
+    store.dispatch({type: "UpdateDeliveryAddress", payload: parseFloat(e.currentTarget.value)}); 
+    let address = store.getState().addresses.filter(o=>o.id === parseFloat(e.currentTarget.value))[0];
+    let {id, ...curatedAddress} = address;
+    store.dispatch({type: "UpdateOrderShippingAddress", payload: curatedAddress});
+    if (store.getState().billingIsShipping) {
+      store.dispatch({type: "UpdateOrderBillingAddress", payload: curatedAddress});
+    }
+    document.getElementById("editShippingAddress").querySelector("input").checked = false;
+  } else {
+    
+
   }
+  
 });
 document.getElementById("EcomOrderDeliveryCountry").addEventListener('change', (e) => {
   getDataJSON(e.currentTarget.value)
